@@ -14,7 +14,8 @@ SRCS_CLI =
 OBJ_CLI = 
 HDRS_CLI = 
 
-server:
+run_server:
+	source .env && ./Server
 
 client:
 
