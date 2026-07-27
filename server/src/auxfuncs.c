@@ -3,20 +3,14 @@
 
 #include <mysql/mysql.h>
 
-int fetchEnvInfo(MYSQL* conn) {
-    char* db = getenv("DB_NAME");
-    printf("\n%s", db);
-    char* username = getenv("DB_USERNAME");
-    printf("\n%s", username);
-    char* pass = getenv("DB_PASS");
-    printf("\n%s", pass);
+int connToDB(MYSQL* conn) {
     char* ip = getenv("DB_IP");
-    printf("\n%s", ip);
-    int port = atoi(getenv("DB_PORT"));
-    printf("\n%d", port);
+    char* db = getenv("DB_NAME");
+    char* username = getenv("DB_USER");
+    char* pass = getenv("DB_PASS");
 
-    if(!mysql_real_connect(conn, ip, username, pass, db, port, NULL, 0)) {
-        fprintf(stderr, "\n[ERROR] Couldn establish a connection with the Database");
+    if(!mysql_real_connect(conn, ip, username, pass, db, 3306, NULL, 0)) {
+        fprintf(stderr, "%s\n", mysql_error(conn));
         return 0;
     }
 

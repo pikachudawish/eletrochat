@@ -3,6 +3,6 @@
 
 #include <mysql/mysql.h>
 
-int fetchEnvInfo(MYSQL* conn);
+int connToDB(MYSQL* conn);
 
 #endif
