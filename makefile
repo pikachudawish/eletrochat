@@ -8,8 +8,8 @@ CFLAGS_C = -Wall -Wextra -Iclient/hdr -g
 LIBS_S = -lmysqlclient
 LIBS_C = 
 
-SRCS_SERVER = server/src/auxfuncs.c server/src/main.c server/src/threadfuncs.c
-OBJ_SERVER =  server/obj/auxfuncs.o server/obj/main.o server/obj/threadfuncs.o
+SRC_SERVER = server/src/globalvar.c server/src/auxfuncs.c server/src/main.c server/src/thread/dbthread.c server/src/thread/senpkgthread.c server/src/thread/serverthread.c
+OBJ_SERVER = server/obj/globalvar.o server/obj/auxfuncs.o server/obj/main.o server/obj/thread/dbthread.o server/obj/thread/senpkgthread.o server/obj/thread/serverthread.o
 
 #SRCS_CLI = 
 #OBJ_CLI = 
@@ -24,7 +24,7 @@ $(SERVER): $(OBJ_SERVER)
 server/obj:
 	mkdir -p server/obj
 
-server/obj/%.o: server/src/%.c | server/obj
+server/obj/%.o: server/src/%.c | server/src/thread/%.c | server/obj
 	$(CC) $(CFLAGS_S) -c $< -o $@
 
 compile_client: $(CLIENT)

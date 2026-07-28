@@ -1,6 +1,6 @@
 #ifndef GLOBALVAR_H
 #define GLOBALVAR_H
 
-extern int* server;
+extern int* running;
 
 #endif

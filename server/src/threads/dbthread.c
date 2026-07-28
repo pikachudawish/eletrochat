@@ -6,21 +6,21 @@
 #include "globalvar.h"
 #include "auxfuncs.h"
 
-
-void* dbworker(void* arg) {
+void* db_worker(void* arg) {
     MYSQL* conn = mysql_init(NULL);
 
     if(!connToDB(conn)) {
         mysql_close(conn);
-        *server = 0;
+        *running = 0;
         return NULL;
     }
 
-    while(*server) {
-
+    while(*running) {
+    
     }
 
     mysql_close(conn);
 
     return NULL;
 }
+

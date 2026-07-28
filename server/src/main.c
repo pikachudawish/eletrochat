@@ -4,23 +4,30 @@
 #include <pthread.h>
 
 #include "globalvar.h"
+#include "serverfuncs.h"
+#include "threadfuncs.h"
 
-#define N_THREADS 1
+#define N_THREADS 3
 
 int main() {
-    server = (int*)malloc(sizeof(int));
-    if(!server) return 1;
+    running = (int*)malloc(sizeof(int));
+    if(!running) return 1;
 
-    *server = 1;
+    *running = 1;
 
     pthread_t* threads = (pthread_t*)malloc(N_THREADS * sizeof(pthread_t));
     if(!threads) {
-        free(server);
+        free(running);
         return 1;
     }
 
+    pthread_create(&threads[0], NULL, server, NULL);
+    pthread_create(&threads[1], NULL, db_worker, NULL);
+    pthread_create(&threads[2], NULL, sendpkg_worker, NULL);
 
-    free(server);
+    for(int s = 0; s < N_THREADS; s++) pthread_join(threads[s], NULL);
+
+    free(running);
     free(threads);
 
     return 0;
