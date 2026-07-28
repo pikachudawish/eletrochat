@@ -10,7 +10,7 @@ void* sendpkg_worker(void* arg) {
     while(*running) {
 
     }
-    printf("\nSendpkg_worker's loop has ended.");
+    printf("\n[SEND_W]Loop Ended");
 
     return NULL;
 }

@@ -18,7 +18,8 @@ void* db_worker(void* arg) {
     while(*running) {
     
     }
-    printf("\ndb_worker's loop has ended.");
+    printf("\n[DB_W]Loop ended");
+    
 
     mysql_close(conn);
 

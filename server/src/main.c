@@ -29,7 +29,7 @@ int main() {
     pthread_create(&threads[2], NULL, sendpkg_worker, NULL);
     pthread_create(&threads[3], NULL, recvpkg_worker, NULL);
 
-    //Linha de Comandos 
+    //Linha de Comandos
     printf("\n#SERVER COMMAND LINE#");
     while(*running) {
         int cmd = 0;
@@ -42,12 +42,12 @@ int main() {
 
         switch(cmd){
             case QUIT:
-                printf("\nStarting shutdown Procedures...");
+                printf("\n[MAIN]Starting shutdown Procedures...");
                 *running = 0;
                 break;
 
             default:
-                printf("\nINVALID COMMAND!\n");
+                printf("\n[MAIN]INVALID COMMAND!\n");
                 break;
         } 
         
@@ -55,7 +55,7 @@ int main() {
     }
     
     for(int s = 0; s < N_THREADS; s++) pthread_join(threads[s], NULL);
-    printf("\nAll threads were deleted. Ending Gracefully the Programn.");
+    printf("\nAll threads were deleted. Ending Gracefully the Programm.");
 
     free(running);
     free(threads);

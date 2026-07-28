@@ -8,7 +8,7 @@ void* recvpkg_worker(void* arg) {
     while(*running) {
 
     }
-    printf("\nRecvpkg_worker's loop has ended.");
+    printf("\n[RECV_W]Loop ended");
 
     return NULL;
 }
