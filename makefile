@@ -8,8 +8,20 @@ CFLAGS_C = -Wall -Wextra -Iclient/hdr -g
 LIBS_S = -lmysqlclient
 LIBS_C = 
 
-SRC_SERVER = server/src/globalvar.c server/src/auxfuncs.c server/src/main.c server/src/thread/dbthread.c server/src/thread/senpkgthread.c server/src/thread/serverthread.c
-OBJ_SERVER = server/obj/globalvar.o server/obj/auxfuncs.o server/obj/main.o server/obj/thread/dbthread.o server/obj/thread/senpkgthread.o server/obj/thread/serverthread.o
+SRC_SERVER = \
+	server/src/globalvar.c \
+	server/src/dbfuncs.c server/src/main.c \
+	server/src/threads/dbthread.c \
+	server/src/threads/sendpkgthread.c \
+	server/src/threads/serverthread.c
+
+OBJ_SERVER = \
+	server/obj/globalvar.o \
+	server/obj/dbfuncs.o \
+	server/obj/main.o \
+	server/obj/threads/dbthread.o \
+	server/obj/threads/sendpkgthread.o \
+	server/obj/threads/serverthread.o
 
 #SRCS_CLI = 
 #OBJ_CLI = 
@@ -24,7 +36,13 @@ $(SERVER): $(OBJ_SERVER)
 server/obj:
 	mkdir -p server/obj
 
-server/obj/%.o: server/src/%.c | server/src/thread/%.c | server/obj
+server/obj/threads:
+	mkdir -p server/obj/threads
+
+server/obj/%.o: server/src/%.c | server/obj
+	$(CC) $(CFLAGS_S) -c $< -o $@
+
+server/obj/threads/%.o: server/src/threads/%.c | server/obj/threads
 	$(CC) $(CFLAGS_S) -c $< -o $@
 
 compile_client: $(CLIENT)
@@ -47,11 +65,15 @@ run_client:
 clean: clean_client clean_server
 
 clean_server:
+	rm -rf server/obj/threads/*.o
+	rmdir server/obj/threads
 	rm -rf server/obj/*.o 
+	rmdir server/obj
 	rm -f $(SERVER)
 
 clean_client:
 	rm -rf client/obj/*.o 
+	rmdir -f client/obj
 	rm -f $(CLIENT) 
 
 .PHONY: all clean compile_client compile_server run_client run_server clean_client clean_server

@@ -9,7 +9,7 @@ void* server(void* arg) {
     while (*running) {
 
     }
-    
+    printf("\nServer's loop has ended.");
 
     return NULL;
 }

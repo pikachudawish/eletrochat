@@ -1,16 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <pthread.h>
-
 #include "globalvar.h"
 
-void* sendpkg_worker(void* arg) {
+void* recvpkg_worker(void* arg) {
 
     while(*running) {
 
     }
-    printf("\nSendpkg_worker's loop has ended.");
+    printf("\nRecvpkg_worker's loop has ended.");
 
     return NULL;
 }

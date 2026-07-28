@@ -1,5 +1,5 @@
-#ifndef AUXFUNCS_H
-#define AUXFUNCS_H
+#ifndef DBFUNCS_H
+#define DBFUNCS_H
 
 #include <mysql/mysql.h>
 

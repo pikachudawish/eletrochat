@@ -4,7 +4,7 @@
 #include <mysql/mysql.h>
 
 #include "globalvar.h"
-#include "auxfuncs.h"
+#include "dbfuncs.h"
 
 void* db_worker(void* arg) {
     MYSQL* conn = mysql_init(NULL);
@@ -18,6 +18,7 @@ void* db_worker(void* arg) {
     while(*running) {
     
     }
+    printf("\ndb_worker's loop has ended.");
 
     mysql_close(conn);
 
