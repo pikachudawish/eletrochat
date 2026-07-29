@@ -5,12 +5,12 @@
 #include <pthread.h>
 
 #include "globalvar.h"
-#include "cmdenum.h"
+#include "enums.h"
 
 #include "serverfuncs.h"
 #include "threadfuncs.h"
 
-#define N_THREADS 4
+#define N_THREADS 3
 
 int main() {
     running = (int*)malloc(sizeof(int));
@@ -27,7 +27,6 @@ int main() {
     pthread_create(&threads[0], NULL, server, NULL);
     pthread_create(&threads[1], NULL, db_worker, NULL);
     pthread_create(&threads[2], NULL, sendpkg_worker, NULL);
-    pthread_create(&threads[3], NULL, recvpkg_worker, NULL);
 
     //Linha de Comandos
     printf("\n#SERVER COMMAND LINE#");

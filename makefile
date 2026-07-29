@@ -13,7 +13,6 @@ SRC_SERVER = \
 	server/src/dbfuncs.c server/src/main.c \
 	server/src/threads/dbthread.c \
 	server/src/threads/sendpkgthread.c \
-	server/src/threads/recvpkgthread.c \
 	server/src/threads/serverthread.c
 
 OBJ_SERVER = \
@@ -22,7 +21,6 @@ OBJ_SERVER = \
 	server/obj/main.o \
 	server/obj/threads/dbthread.o \
 	server/obj/threads/sendpkgthread.o \
-	server/obj/threads/recvpkgthread.o \
 	server/obj/threads/serverthread.o
 
 #SRCS_CLI = 
