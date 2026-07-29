@@ -51,11 +51,10 @@ int main() {
                 break;
         } 
         
-
     }
     
     for(int s = 0; s < N_THREADS; s++) pthread_join(threads[s], NULL);
-    printf("\nAll threads were deleted. Ending Gracefully the Programm.");
+    printf("\n[MAIN]All threads were deleted. Ending Gracefully the Programm.");
 
     free(running);
     free(threads);
