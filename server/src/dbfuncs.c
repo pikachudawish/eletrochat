@@ -10,7 +10,6 @@ int connToDB(MYSQL* conn) {
     char* pass = getenv("DB_PASS");
 
     if(!mysql_real_connect(conn, ip, username, pass, db, 3306, NULL, 0)) {
-        fprintf(stderr, "%s\n", mysql_error(conn));
         return 0;
     }
 

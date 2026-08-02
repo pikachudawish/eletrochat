@@ -9,6 +9,7 @@ typedef struct _message {
 typedef struct _package {
     int type;
     message msg;
+    struct _package* next_pkg;
 } package;
 
-#endif
+#endif 

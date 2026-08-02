@@ -24,6 +24,18 @@ int main() {
         return 1;
     }
 
+    lock_db = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
+    lock_sendpkg = (pthread_mutex_t*)malloc(sizeof(pthread_mutex_t));
+
+    pthread_mutex_init(&lock_db, NULL);
+    pthread_mutex_init(&lock_sendpkg, NULL);
+
+    cond_db = (pthread_cond_t*)malloc(sizeof(pthread_cond_t));
+    cond_sendpkg = (pthread_cond_t*)malloc(sizeof(pthread_cond_t));
+
+    pthread_cond_init(cond_db, NULL);
+    pthread_cond_init(cond_sendpkg, NULL);
+
     pthread_create(&threads[0], NULL, server, NULL);
     pthread_create(&threads[1], NULL, db_worker, NULL);
     pthread_create(&threads[2], NULL, sendpkg_worker, NULL);
@@ -54,6 +66,12 @@ int main() {
     
     for(int s = 0; s < N_THREADS; s++) pthread_join(threads[s], NULL);
     printf("\n[MAIN]All threads were deleted. Ending Gracefully the Programm.");
+
+    pthread_mutex_destroy(&lock_db);
+    pthread_mutex_destroy(&lock_sendpkg);
+
+    free(lock_db);
+    free(lock_sendpkg);
 
     free(running);
     free(threads);

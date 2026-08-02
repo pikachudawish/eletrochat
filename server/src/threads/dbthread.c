@@ -11,6 +11,7 @@ void* db_worker(void* arg) {
 
     if(!connToDB(conn)) {
         mysql_close(conn);
+        fprintf(stderr, "\n[DB_W] ERROR:Could't connect to the database");
         *running = 0;
         return NULL;
     }
@@ -18,7 +19,7 @@ void* db_worker(void* arg) {
     while(*running) {
     
     }
-    printf("\n[DB_W]Loop ended");
+    printf("\n[DB_W] LOG:Loop ended");
     
 
     mysql_close(conn);

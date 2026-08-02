@@ -112,7 +112,7 @@ void* server(void* arg) {
     }
     free(ev_array);
 
-    printf("\n[SERVER]Loop Ended");
+    printf("\n[SERVER] LOG:Loop Ended");
 
     close(server_socket);
 
