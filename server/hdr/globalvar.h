@@ -4,11 +4,15 @@
 #include <pthread.h>
 
 #include "struct_pkg.h"
+#include "struct_db.h"
 
 extern int* running;
 
-extern package* pkg_list_head;
-extern package* pkg_list_tail; 
+extern packagelist* head_pkg;
+extern packagelist* tail_pkg; 
+
+extern dbinfolist* head_db;
+extern dbinfolist* tail_db;
 
 extern pthread_cond_t* cond_db;
 extern pthread_cond_t* cond_sendpkg;

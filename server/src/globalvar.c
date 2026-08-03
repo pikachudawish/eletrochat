@@ -7,8 +7,11 @@ int pipe_sendpkg[2] = {0,0};
 
 int* running = NULL;
 
-package* pkg_list_head = NULL;
-package* pkg_list_tail = NULL;
+packagelist* head_pkg = NULL;
+packagelist* tail_pkg = NULL;
+
+dbinfolist* head_db = NULL;
+dbinfolist* tail_db = NULL;
 
 pthread_cond_t* cond_db = NULL;
 pthread_cond_t* cond_sendpkg = NULL;
