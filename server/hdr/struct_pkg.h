@@ -2,23 +2,25 @@
 #define STRUCT_PKG_H
 
 #include "struct_user.h"
+#include "struct_client.h"
 
 typedef struct _message {
     char message[128];
-    char from_user[16];
+    char sender[16];
 } message;
 
 typedef struct _package {
     int type;
-    union data {
+    int recipient_fd;
+    union {
+        void* null;
         userinfo ui;
         message msg;
-    };
+    } data;
 } package;
 
 typedef struct _packagelist {
-    int fd_dest;
-    int fd_sender;
+    int fd_recipient, fd_sender;
     package pkg;
     struct _packagelist* next;
 } packagelist;

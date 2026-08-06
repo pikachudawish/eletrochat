@@ -1,18 +1,25 @@
+#define _POSIX_C_SOURCE 199309L     
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 #include <pthread.h>
 #include <sys/socket.h>
 #include <sys/epoll.h>
+#include <sys/timerfd.h>
 
 #include "globalvar.h"
 #include "enums.h"
 #include "struct_pkg.h"
+#include "struct_client.h"
 
 #include "serverfuncs.h"
+#include "cli_llikedlist_funcs.h"
 
-#define EVENTSIZE 50
+#define EVENTSIZE 64
 
 void* server(void* arg) {
     int server_socket = server_init();
@@ -34,14 +41,43 @@ void* server(void* arg) {
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, server_socket, &ev_server) == -1) {
         close(server_socket);
-        fprintf(stderr, "\n[SERVER] ERROR:epoll_ctl() failed");
+        fprintf(stderr, "\n[SERVER] ERROR:epoll_ctl() 1 failed");
         *running = 0;
         return NULL;
     }
 
+    int timer_fd = timerfd_create(CLOCK_MONOTONIC, 0);
+    if(timer_fd == -1) {
+        close(server_socket);
+        fprintf(stderr, "\n[SERVER] ERROR:timerfd_create() failed");
+        *running = 0;
+        return NULL;
+    }
+
+    struct itimerspec new_value = {.it_value.tv_sec = 60, .it_value.tv_nsec = 0, .it_interval.tv_sec = 60, .it_interval.tv_nsec = 0};
+
+    if(timerfd_settime(timer_fd, 0, &new_value, NULL) == -1) {
+        close(server_socket);
+        close(timer_fd);
+        fprintf(stderr, "\n[SERVER] ERROR:timerfd_create() failed");
+        *running = 0;
+        return NULL;
+    }
+
+    struct epoll_event ev_timer = {.events = EPOLLIN, .data.fd = timer_fd};
+
+    if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, timer_fd, &ev_timer) == -1) {
+        close(server_socket);
+        close(timer_fd);
+        fprintf(stderr, "\n[SERVER] ERROR:epoll_ctl() 2 failed");
+        *running = 0;
+        return NULL;
+    }
 
     int evsize = EVENTSIZE;
     struct epoll_event* ev_array = (struct epoll_event*)malloc(EVENTSIZE*sizeof(struct epoll_event));
+
+    client* cli_head = NULL; 
 
     int n_cli = 0;
     while (*running) {
@@ -49,7 +85,7 @@ void* server(void* arg) {
         if(nfds == -1) continue;
 
         for(int s = 0; s < nfds; s++) {
-            if(ev_array[s].data.fd == server_socket) { 
+            if(ev_array[s].data.fd == server_socket) { //SERVER SOCKET
                 int cli_fd = accept(server_socket, NULL, NULL);
                 if(cli_fd == -1) {
                     fprintf(stderr, "\n[SERVER] WARNING:Couldn't accept a client");
@@ -57,6 +93,14 @@ void* server(void* arg) {
                 }
                 n_cli++;
 
+                char cli_username[16];
+                recv(cli_fd, cli_username, sizeof(cli_username), 0);
+
+                if(!insonTail(&cli_head, cli_fd, cli_username)) {
+                    freeCli(&cli_head);
+                    return NULL;
+                }
+ 
                 if(n_cli > evsize) {
                     evsize = evsize + EVENTSIZE;
                     ev_array = (struct epoll_event*)realloc(ev_array, evsize*sizeof(struct epoll_event));
@@ -71,22 +115,27 @@ void* server(void* arg) {
                 }
 
                 fprintf(stdout, "\n[SERVER] LOG:New client connected!(fd=%d)", cli_fd);
-            } else {
-                package* pkg = (package*)malloc(sizeof(package));
 
-                ssize_t bytes_recv = recv(ev_array[s].data.fd, pkg, sizeof(*pkg), 0);
+            } else if(ev_array[s].data.fd == timer_fd) { // TIMER_FD SOCKET
+                //FAZER SISTEMA HEARTBEAT
+
+
+            } else { //CLIENT SOCKETS
+                package pkg_recv = {.type = -1, .data.null = NULL};
+
+                ssize_t bytes_recv = recv(ev_array[s].data.fd, &pkg_recv, sizeof(pkg_recv), 0);
                 if(bytes_recv <= 0) {
                     if(epoll_ctl(epoll_fd, EPOLL_CTL_DEL, ev_array[s].data.fd, NULL) == -1) {
                         fprintf(stderr, "\n[SERVER] WARNING:epoll_ctl() failed to remove a cli(fd=%d)", ev_array[s].data.fd);
                     }
                     close(ev_array[s].data.fd);
-                    free(pkg);
                     continue;
                 }   
 
-                switch(pkg->type) {
+                package pkg_send = {.type = -1, .data = NULL};
+                switch(pkg_recv.type) {
                     case HB:
-
+                        
                         break;
 
                     case LOGIN:
@@ -98,15 +147,23 @@ void* server(void* arg) {
                         break;
 
                     case MSG:
+                        pkg_send.type = MSG;
+                        strcpy(pkg_send.data.msg.message, pkg_recv.data.msg.message);
+                        strcpy(pkg_send.data.msg.sender, pkg_recv.data.msg.sender);
 
+                        
+
+                        break;
+
+                    case END_CONN:
+                        close(ev_array[s].data.fd);
+                        rmvCli(&cli_head, ev_array[s].data.fd);
                         break;
 
                     default:
 
                         break;
                 }
-                free(pkg);
-
             }
         }
     }

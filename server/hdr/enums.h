@@ -12,6 +12,7 @@ enum pkgtypes {
     LOGIN,
     SIGNUP,
     MSG,
+    END_CONN
 };
 
 #endif
