@@ -10,7 +10,10 @@ LIBS_C =
 
 SRC_SERVER = \
 	server/src/globalvar.c \
-	server/src/dbfuncs.c server/src/main.c \
+	server/src/dbfuncs.c \
+	server/src/main.c \
+	server/src/serverfuncs.c \
+	server/src/cli_linkedlist_funcs.c \
 	server/src/threads/dbthread.c \
 	server/src/threads/sendpkgthread.c \
 	server/src/threads/serverthread.c
@@ -19,6 +22,8 @@ OBJ_SERVER = \
 	server/obj/globalvar.o \
 	server/obj/dbfuncs.o \
 	server/obj/main.o \
+	server/obj/serverfuncs.o \
+	server/obj/cli_linkedlist_funcs.o \
 	server/obj/threads/dbthread.o \
 	server/obj/threads/sendpkgthread.o \
 	server/obj/threads/serverthread.o

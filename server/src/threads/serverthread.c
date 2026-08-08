@@ -96,8 +96,8 @@ void* server(void* arg) {
                 char cli_username[16];
                 recv(cli_fd, cli_username, sizeof(cli_username), 0);
 
-                if(!insonTail(&cli_head, cli_fd, cli_username)) {
-                    freeCli(&cli_head);
+                if(!insonTail(&cli_head, cli_fd, cli_username)) { //failed mem alloc
+                    freeCli(cli_head);
                     return NULL;
                 }
  
@@ -121,7 +121,7 @@ void* server(void* arg) {
 
 
             } else { //CLIENT SOCKETS
-                package pkg_recv = {.type = -1, .data.null = NULL};
+                package pkg_recv = {.type = -1, .recipient_fd = -1,.data.null = NULL};
 
                 ssize_t bytes_recv = recv(ev_array[s].data.fd, &pkg_recv, sizeof(pkg_recv), 0);
                 if(bytes_recv <= 0) {
@@ -132,7 +132,7 @@ void* server(void* arg) {
                     continue;
                 }   
 
-                package pkg_send = {.type = -1, .data = NULL};
+                package pkg_send = {.type = -1, .recipient_fd = -1, .data.null = NULL};
                 switch(pkg_recv.type) {
                     case HB:
                         

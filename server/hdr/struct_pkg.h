@@ -20,7 +20,8 @@ typedef struct _package {
 } package;
 
 typedef struct _packagelist {
-    int fd_recipient, fd_sender;
+    int fd_recipient;
+    client sender;
     package pkg;
     struct _packagelist* next;
 } packagelist;

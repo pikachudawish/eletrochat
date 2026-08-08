@@ -1,5 +1,5 @@
 #ifndef CLI_LINKEDLIST_FUNCS_H
-#define CLI_LIKENDLIST_FUNCS_H
+#define CLI_LINKEDLIST_FUNCS_H
 
 #include "struct_client.h"
 
