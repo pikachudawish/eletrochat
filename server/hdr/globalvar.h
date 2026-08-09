@@ -3,9 +3,11 @@
 
 #include <pthread.h>
 
-#include "struct_pkg.h"
 #include "struct_db.h"
+#include "struct_pkglist.h"
+#include "../../common_hdrs/struct_pkg.h"
 
+extern int* server_id;
 extern int* running;
 
 extern packagelist* head_pkg;

@@ -5,7 +5,7 @@
 #include <pthread.h>
 
 #include "globalvar.h"
-#include "enums.h"
+#include "enums_cmds.h"
 
 #include "serverfuncs.h"
 #include "threadfuncs.h"
@@ -15,8 +15,15 @@
 int main() {
     running = (int*)malloc(sizeof(int));
     if(!running) return 1;
+    
+    server_id = (int*)malloc(sizeof(int));
+    if(!server_id) {
+        free(running);
+        return 1;
+    }
 
     *running = 1;
+    *server_id = 1000000000000001;
 
     pthread_t* threads = (pthread_t*)malloc(N_THREADS * sizeof(pthread_t));
     if(!threads) {

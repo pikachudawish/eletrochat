@@ -4,6 +4,7 @@
 #include <pthread.h>
 
 #include "globalvar.h"
+#include "struct_pkglist.h"
 
 void* sendpkg_worker(void* arg) {
     

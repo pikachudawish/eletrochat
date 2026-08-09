@@ -2,9 +2,7 @@
 
 #include "globalvar.h"
 
-int pipe_db[2] = {0,0};
-int pipe_sendpkg[2] = {0,0}; 
-
+int* server_id = NULL;
 int* running = NULL;
 
 packagelist* head_pkg = NULL;

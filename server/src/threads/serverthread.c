@@ -12,9 +12,9 @@
 #include <sys/timerfd.h>
 
 #include "globalvar.h"
-#include "enums.h"
-#include "struct_pkg.h"
-#include "struct_client.h"
+#include "../../common_hdrs/struct_client.h"
+#include "../../common_hdrs/enum_pkgtype.h"
+#include "../../common_hdrs/struct_pkg.h"
 
 #include "serverfuncs.h"
 #include "cli_llikedlist_funcs.h"
@@ -86,17 +86,30 @@ void* server(void* arg) {
 
         for(int s = 0; s < nfds; s++) {
             if(ev_array[s].data.fd == server_socket) { //SERVER SOCKET
-                int cli_fd = accept(server_socket, NULL, NULL);
-                if(cli_fd == -1) {
+                int new_cli_fd = accept(server_socket, NULL, NULL);
+                if(new_cli_fd == -1) {
                     fprintf(stderr, "\n[SERVER] WARNING:Couldn't accept a client");
                     continue;
                 }
                 n_cli++;
 
                 char cli_username[16];
-                recv(cli_fd, cli_username, sizeof(cli_username), 0);
+                if(recv(new_cli_fd, cli_username, sizeof(cli_username), 0) == -1) {
+                    n_cli--;
+                    close(new_cli_fd);
+                    fprintf(stderr, "\n[SERVER] WARNING:Verifications with new client failed");
+                    continue;
+                }
 
-                if(!insonTail(&cli_head, cli_fd, cli_username)) { //failed mem alloc
+                package send_hb  = {.type = HB, .sender_id = server_id, .data.null = NULL};
+                if(send(new_cli_fd, &send_hb, sizeof(send_hb), 0) == -1) {
+                    n_cli--;
+                    close(new_cli_fd);
+                    fprintf(stderr, "\n[SERVER] WARNING:Verifications with new client failed");
+                    continue;
+                }
+
+                if(!insonTail(&cli_head, new_cli_fd, cli_username)) { //failed mem alloc
                     freeCli(cli_head);
                     return NULL;
                 }
@@ -106,22 +119,22 @@ void* server(void* arg) {
                     ev_array = (struct epoll_event*)realloc(ev_array, evsize*sizeof(struct epoll_event));
                 }
 
-                struct epoll_event new_ev_cli = {.events = EPOLLIN, .data.fd = cli_fd};
+                struct epoll_event new_ev_cli = {.events = EPOLLIN, .data.fd = new_cli_fd};
 
-                if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, cli_fd, &new_ev_cli) == -1) {
-                    fprintf(stderr, "\n[SERVER] WARNING:epoll_ctl() failed to add a new cli(fd=%d)", cli_fd);
-                    close(cli_fd);
+                if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, new_cli_fd, &new_ev_cli) == -1) {
+                    fprintf(stderr, "\n[SERVER] WARNING:epoll_ctl() failed to add a new cli(fd=%d)", new_cli_fd);
+                    close(new_cli_fd);
                     continue;
                 }
 
-                fprintf(stdout, "\n[SERVER] LOG:New client connected!(fd=%d)", cli_fd);
+                fprintf(stdout, "\n[SERVER] LOG:New client connected!(fd=%d)", new_cli_fd);
 
             } else if(ev_array[s].data.fd == timer_fd) { // TIMER_FD SOCKET
                 //FAZER SISTEMA HEARTBEAT
 
 
             } else { //CLIENT SOCKETS
-                package pkg_recv = {.type = -1, .recipient_fd = -1,.data.null = NULL};
+                package pkg_recv = {.type = -1, .sender_id = -1,.data.null = NULL};
 
                 ssize_t bytes_recv = recv(ev_array[s].data.fd, &pkg_recv, sizeof(pkg_recv), 0);
                 if(bytes_recv <= 0) {
@@ -132,7 +145,7 @@ void* server(void* arg) {
                     continue;
                 }   
 
-                package pkg_send = {.type = -1, .recipient_fd = -1, .data.null = NULL};
+                package pkg_send = {.type = -1, .sender_id = *server_id, .data.null = NULL};
                 switch(pkg_recv.type) {
                     case HB:
                         

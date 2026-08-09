@@ -2,10 +2,9 @@
 #define STRUCT_CLIENT_H
 
 typedef struct _client {
-    int fd;
+    int id;
     char username[16];
     struct _client* next;
 } client;
-
 
 #endif

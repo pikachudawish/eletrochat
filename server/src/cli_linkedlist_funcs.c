@@ -2,23 +2,23 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "struct_client.h"
+#include "../../common_hdrs/struct_client.h"
 
-client* newNode(int fd, char username[16]) {
+client* newNode(int id, char username[16]) {
     client* new = (client*)malloc(sizeof(client));
     if(!new) {
         fprintf(stderr, "[SERVER] ERROR:Failed malloc newNode");
         return NULL;
     }
-    new->fd = fd;
+    new->id = id;
     strcpy(new->username, username);
     new->next = NULL;
 
     return new;
 }
 
-int insonTail(client **head, int fd, char username[16]) {
-    client* new = newNode(fd, username);
+int insonTail(client **head, int id, char username[16]) {
+    client* new = newNode(id, username);
     if(!new) {
         return 0;
     }
@@ -37,17 +37,17 @@ int insonTail(client **head, int fd, char username[16]) {
     return 1;
 }
 
-int rmvCli(client** head, int fd) {
+int rmvCli(client** head, int id) {
     client* now = *head;
     client* before = NULL;
 
-    while(now != NULL && now->fd != fd) {
+    while(now != NULL && now->id != id) {
         before = now;
         now = now->next;
     }
 
     if(!now) {
-        fprintf(stderr, "[SERVER] WARNING:Couldn't remove the cli(fd=%d) that disconnected\n", fd);
+        fprintf(stderr, "[SERVER] WARNING:Couldn't remove the cli(id=%d) that disconnected\n", id);
         return 0;
     }
 

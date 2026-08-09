@@ -1,9 +1,5 @@
-#ifndef CMDENUM_H
-#define CMDENUM_H
-
-enum commands { 
-    QUIT,
-};
+#ifndef ENUM_PKGTYPE_H
+#define ENUM_PKGTYPE_H
 
 enum pkgtypes {
     HB,
